@@ -4,6 +4,11 @@ import router from './router'
 import axios from 'axios'
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/common/element.js'
+import {
+  MessageBox
+} from 'element-ui'
+Vue.prototype.$apiUrl = "http://127.0.0.1:3000"
+Vue.prototype.$confirm = MessageBox.confirm
 Vue.config.productionTip = false
 // Vue.prototype.$http = axios
 // axios.defaults.baseURL = 'http://127.0.0.1:3000'

@@ -4,6 +4,12 @@ export function request(config) {
     baseURL: 'http://localhost:3000',
     // timeout: 5000
   })
+  //添加请求拦截器添加token
+  instance.interceptors.request.use(config => {
+    console.log(config);
+    config.headers.Authorization = window.sessionStorage.getItem("token")
+    return config
+  })
   instance.interceptors.response.use(res => {
     return res.data
   }, err => {

@@ -10,6 +10,10 @@ VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
 const Home = () => import('views/home/Home.vue')
+const Welcome = () => import('views/welcome/Welcome.vue')
+const Candidate = () => import('views/candidate/Candidate.vue')
+const addCandidate = () => import('views/candidate/addCandidate.vue')
+
 // const Shopcar = () => import('../views/shopcar/Shopcar.vue')
 // const Category = () => import('../views/category/Category.vue')
 // const Profile = () => import('../views/profile/Profile.vue')
@@ -24,7 +28,22 @@ const router = new VueRouter({
       redirect: '/login'
     }, {
       path: '/home',
-      component: Home
+      component: Home,
+      // 从/home重定向到welcome
+      redirect: '/welcome',
+      children: [{
+          path: '/welcome',
+          component: Welcome
+        },
+        {
+          path: '/candidate',
+          component: Candidate
+        },
+        {
+          path: '/addcandidate',
+          component: addCandidate
+        }
+      ]
     },
     //{
 
