@@ -1,6 +1,16 @@
 import {
   request
 } from '../request.js'
+//解析简历
+export function getCandidateByFile(filename) {
+  return request({
+    url: '/file/analysis',
+    method: 'post',
+    data: {
+      filename: filename
+    }
+  })
+}
 
 export function getCandidateByPage(pageSize, page) {
   return request({
@@ -70,6 +80,16 @@ export function addCandidateOnline(options) {
     url: '/candidate/add',
     method: 'post',
     data: options
+  })
+}
+
+export function addCandidateFromExcel(options) {
+  return request({
+    url: '/candidate/addFromExcel',
+    method: 'post',
+    data: {
+      candidateList: options
+    }
   })
 }
 export function checkCandidate(options) {

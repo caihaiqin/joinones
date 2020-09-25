@@ -11,7 +11,9 @@
         <el-tab-pane label="在线添加">
           <online-add-candidate></online-add-candidate>
         </el-tab-pane>
-        <el-tab-pane label="excel导入">excel</el-tab-pane>
+        <el-tab-pane label="excel导入">
+          <excel-add-candidate></excel-add-candidate>
+        </el-tab-pane>
         <el-tab-pane label="在线抓取">在线抓取</el-tab-pane>
       </el-tabs>
     </el-card>
@@ -21,6 +23,7 @@
 <script>
 import OnlineAddCandidate from "./childrenComps/OnlineAddCandidate";
 import UploadAddCandidate from "./childrenComps/UploadAddCandidate";
+import ExcelAddCandidate from "./childrenComps/ExcelAddCandidate";
 export default {
   name: "addCandidate.vue",
   data() {
@@ -29,6 +32,7 @@ export default {
   components: {
     OnlineAddCandidate,
     UploadAddCandidate,
+    ExcelAddCandidate,
   },
   //生命周期 - 创建完成（访问当前this实例）
   created() {},

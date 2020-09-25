@@ -31,10 +31,12 @@ import {
   DatePicker,
   Dialog,
   Upload,
+  Tag
 
 
 } from 'element-ui'
 
+Vue.use(Tag)
 Vue.use(Upload)
 Vue.use(Dialog)
 Vue.use(DatePicker)
