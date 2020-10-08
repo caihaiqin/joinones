@@ -30,8 +30,17 @@ export function getCandidateAll() {
 
   })
 }
+//根据pipeline状态查询候选人
+export function getCandidateByPipeline(pipeline) {
+  return request({
+    url: '/candidate/getCandidateByPipeline',
+    method: 'post',
+    data: {
+      pipeline: pipeline,
 
-
+    }
+  })
+}
 export function getCandidateByKeyword(keyword) {
   return request({
     url: '/candidate/getCandidateByKeyword',

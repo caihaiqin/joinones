@@ -31,11 +31,19 @@ import {
   DatePicker,
   Dialog,
   Upload,
-  Tag
-
-
+  Tag,
+  Steps,
+  Step,
+  Cascader,
+  Timeline,
+  TimelineItem,
 } from 'element-ui'
 
+Vue.use(Timeline)
+Vue.use(TimelineItem)
+Vue.use(Cascader)
+Vue.use(Steps)
+Vue.use(Step)
 Vue.use(Tag)
 Vue.use(Upload)
 Vue.use(Dialog)

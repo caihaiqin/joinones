@@ -13,6 +13,7 @@ const Home = () => import('views/home/Home.vue')
 const Welcome = () => import('views/welcome/Welcome.vue')
 const Candidate = () => import('views/candidate/Candidate.vue')
 const addCandidate = () => import('views/candidate/addCandidate.vue')
+const PipeLine = () => import('views/pipeline/PipeLine.vue')
 
 // const Shopcar = () => import('../views/shopcar/Shopcar.vue')
 // const Category = () => import('../views/category/Category.vue')
@@ -42,6 +43,10 @@ const router = new VueRouter({
         {
           path: '/addcandidate',
           component: addCandidate
+        },
+        {
+          path: '/pipeline',
+          component: PipeLine
         }
       ]
     },

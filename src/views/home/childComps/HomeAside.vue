@@ -84,7 +84,20 @@ export default {
           ],
         },
         { authName: "职位", id: 3, path: "/position", children: [{}] },
-        { authName: "Pipeline", id: 4, path: "/pipeline", children: [{}] },
+        {
+          authName: "Pipeline",
+          id: 4,
+          path: "/pipeline",
+          children: [
+            {
+              authName: "pipeline",
+              id: 201,
+              path: "/pipeline",
+              children: [{}],
+            },
+          ],
+        },
+
         { authName: "Mapping", id: 5, path: "/mapping", children: [{}] },
       ],
     };

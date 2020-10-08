@@ -84,6 +84,7 @@ export default {
 
               // 登录成功后保存token,使用sessionStorage存储
               window.sessionStorage.setItem("token", res.token);
+              window.sessionStorage.setItem("us", res.us);
               //通过编程式导航跳转到主页
               this.$router.push("/home");
             } else {

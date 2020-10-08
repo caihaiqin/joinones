@@ -1,0 +1,265 @@
+<!--  -->
+<template>
+  <div>
+    <el-row>
+      <el-button size="small" @click="pass">通过</el-button>
+      <el-button size="small" @click="repulse">打回</el-button>
+    </el-row>
+    <!-- //时间线显示备注信息 -->
+    <div class="block">
+      <el-timeline :reverse="true">
+        <el-timeline-item
+          v-for="(activity, index) in auditDialogInfo.remarks"
+          :key="index"
+          icon="el-icon-user"
+          type="primary"
+          :timestamp="activity.remarkTime"
+          placement="top"
+          v-show="activity.remarks.length>0"
+        >
+          <el-row :gutter="10">
+            <el-col :span="4">
+              <div class="remarker">
+                <img src="~assets/img/boy.svg" alt />
+                <div>{{activity.remarker}}</div>
+              </div>
+            </el-col>
+            <el-col :span="20">
+              <el-card>{{activity.remarks}}</el-card>
+            </el-col>
+          </el-row>
+        </el-timeline-item>
+      </el-timeline>
+    </div>
+    <el-dialog
+      :title="newCandidateInfo.name"
+      :visible.sync="dialogVisible"
+      width="60%"
+      :before-close="dialogClose"
+      :append-to-body="true"
+    >
+      <!-- //页面中用到了2个
+      <el-dialog></el-dialog>弹框（或者是dialog中再嵌套dialog），会出现2个灰色蒙版层叠加，需要再点一下蒙层才会消失。
+      用一个属性解决 :append-to-body="true"-->
+      <span>
+        <el-row :gutter="10">
+          <el-col :span="4">
+            <span>备注</span>
+          </el-col>
+          <el-col :span="16">
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 6}"
+              placeholder="请输入内容"
+              v-model="remarks"
+            ></el-input>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
+          <el-col :span="4">
+            <span>添加提醒</span>
+          </el-col>
+          <el-col :span="16">
+            <div class="block">
+              <span class="demonstration"></span>
+              <el-date-picker v-model="remindtime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
+          <el-col :span="4">
+            <span>提醒人</span>
+          </el-col>
+          <el-col :span="16">
+            <div class="block">
+              <span class="demonstration"></span>
+              <el-cascader
+                placeholder="请选择提醒人"
+                v-model="reminder"
+                :options="options"
+                @change="cascaderChange"
+              ></el-cascader>
+            </div>
+          </el-col>
+        </el-row>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-row :gutter="2">
+          <el-col :span="10">
+            <el-button type="primary" @click="saveRemarks">{{statusList[label]}}</el-button>
+          </el-col>
+          <el-col :span="10">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+          </el-col>
+        </el-row>
+      </span>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { updateCandidateById } from "network/candidate/getCandidate.js";
+import { timeFormat } from "common/utils.js";
+export default {
+  inject: ["reload"],
+  name: "Audit",
+  props: ["candidateId", "candidateInfo", "parHandleClose", "userList"],
+  data() {
+    return {
+      index: 0, //用于保存切换pipelineTabBar，作为事件总结参数
+      auditDialogInfo: {},
+      //保存选择了哪个按钮
+      label: "",
+      //状态对应列表
+      statusList: {
+        pass: "审核通过",
+        repulse: "打回",
+      },
+      //保存备注信息 提醒人 提醒时间
+      remarks: "",
+      reminder: [],
+      remindtime: new Date(),
+      newCandidateId: "",
+      newCandidateInfo: {},
+      dialogVisible: false,
+
+      options: [],
+    };
+  },
+  watch: {
+    candidateInfo: {
+      //深度监听，可监听到对象、数组的变化
+      handler(newV, oldV) {
+        // do something, 可使用this
+        console.log(newV, oldV);
+        this.newCandidateInfo = newV;
+
+        this.auditDialogInfo = this.newCandidateInfo.pipeline_info.audit;
+        console.log(this.auditDialogInfo);
+      },
+      deep: true,
+    },
+  },
+  methods: {
+    //时间选择器值改变触发
+    cascaderChange(reminder) {
+      console.log(reminder[0]);
+    },
+    //点击保存备注按钮
+    saveRemarks() {
+      this.dialogVisible = false;
+      //保存所有流程提醒事项
+      this.newCandidateInfo.pipeline_info.reminds.push({
+        remindtime: this.remindtime,
+        reminder: this.reminder,
+      });
+
+      //保存子流程内提醒事项
+      this.auditDialogInfo[this.label].reminder.push(this.reminder[0]);
+      this.auditDialogInfo[this.label].remarks.push(this.remarks);
+      this.auditDialogInfo[this.label].remindtime = this.remindtime;
+      //获得添加备注的时候的添加用户
+      let remarkTime = timeFormat(new Date(), "YYYY-mm-dd HH:MM:SS");
+      let remarker = window.sessionStorage.getItem("us");
+      console.log(remarkTime);
+      this.auditDialogInfo.remarks.push({
+        remarks: this.remarks,
+        remarkTime: remarkTime,
+        remarker: remarker,
+      });
+
+      //根据状态列表得到状态值
+      this.auditDialogInfo.subpipeline = this.statusList[this.label];
+      //如果点击的是通过按钮，则将this.newCandidateInfo.pipeline更新为推荐，如果点击的是打回按钮，则将
+      //this.newCandidateInfo.pipeline更新为callList
+
+      if (this.label == "pass") {
+        this.newCandidateInfo.pipeline = "推荐";
+        this.newCandidateInfo.pipeline_info.subpipeline = "已推荐";
+        //切换到推荐流程 index=2
+        this.index = 2;
+      }
+      if (this.label == "repulse") {
+        this.newCandidateInfo.pipeline = "callList";
+        this.newCandidateInfo.pipeline_info.subpipeline = "打回";
+
+        //切换到callList流程 index=0
+        this.index = 0;
+      }
+      console.log(this.newCandidateInfo.pipeline);
+      //更新状态时间
+      let statustime = timeFormat(new Date(), "YYYY-mm-dd HH:MM:SS");
+      this.auditDialogInfo.statustime = statustime;
+      this.auditDialogInfo[this.label].statustime = statustime;
+      //重新将this.auditDialogInfo赋值给newCandidateInfo.pipeline_info
+
+      this.newCandidateInfo.pipeline_info.callList = this.auditDialogInfo;
+      //{
+      // pipeline: this.newCandidateInfo.pipeline,
+      // pipeline_info: this.newCandidateInfo.pipeline_info,
+      //}
+      updateCandidateById(this.candidateId, this.newCandidateInfo)
+        .then((res) => {
+          if (res.err == 0) {
+            this.$message("提交成功");
+            //提醒人 备注清空
+            this.reminder = "";
+            this.remarks = "";
+            //列表刷新
+            this.parHandleClose();
+            //
+            this.$EventBus.$emit("pipelineSubmit", this.index);
+            // this.reload();
+          } else {
+            this.$message("保存失败");
+          }
+        })
+        .catch((err) => {
+          this.$message("内部错误");
+        });
+    },
+    //对话框关闭时间
+    dialogClose() {
+      this.dialogVisible = false;
+    },
+    pass() {
+      this.dialogVisible = true;
+      this.label = "pass";
+    },
+    repulse() {
+      this.dialogVisible = true;
+      this.label = "repulse";
+    },
+  },
+  //生命周期 - 创建完成（访问当前this实例）
+  created() {
+    this.newCandidateInfo = this.candidateInfo;
+    console.log(this.newCandidateInfo);
+    this.auditDialogInfo = this.newCandidateInfo.pipeline_info.audit;
+    //将所有用户列表转化到options配置里
+    for (let i = 0; i < this.userList.length; i++) {
+      this.options.push({
+        value: this.userList[i].us,
+        label: this.userList[i].us,
+      });
+    }
+  },
+  //生命周期 - 挂载完成（访问DOM元素）
+  mounted() {},
+};
+</script>
+<style scoped>
+/* @import url(); 引入css类 <style scoped src='./assets/css/base.css'>*/
+.el-row {
+  margin-top: 20px;
+}
+.block {
+  margin-top: 20px;
+}
+.remarker {
+  width: 100%;
+}
+.remarker img {
+  width: 20%;
+}
+</style>
