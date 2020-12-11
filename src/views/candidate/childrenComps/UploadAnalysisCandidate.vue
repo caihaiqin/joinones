@@ -175,8 +175,10 @@ export default {
       //深度监听，可监听到对象、数组的变化
       handler(newV, oldV) {
         // do something, 可使用this
-        console.log(newV, oldV);
+        // console.log(newV, oldV);
         this.addCandidateForm = newV;
+        // 设置默认Pipeline
+        this.addCandidateForm.pipeline = "callList";
       },
       deep: true,
     },
@@ -196,6 +198,7 @@ export default {
           .then((res) => {
             if (res.err == 0) {
               this.$message("插入成功");
+              this.$store.commit("callListNumIncrease"); //更新callList流程候选人人数
               this.$router.push("/candidate");
             }
             if (res.err == -99) {

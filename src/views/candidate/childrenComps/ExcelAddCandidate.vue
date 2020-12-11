@@ -66,14 +66,23 @@ export default {
       });
       // window.location = "http://127.0.0.1:3000/public/excel_template.xlsx";
     },
+
     //插入数据
     addCandidate() {
+      //设置初始Pipeline未callList
+      this.addCandidateForm.forEach((item, index) => {
+        item.pipeline = "callList";
+      });
+
       addCandidateFromExcel(this.addCandidateForm)
         .then((res) => {
           console.log(res);
           this.$message(res.msg);
           this.msg = "成功插入候选人清单";
           this.addCandidateForm = res.unrepetitionList;
+          for (let i = 0; i < res.unrepetitionList.length; i++) {
+            this.$store.commit("callListNumIncrease"); //更新callList流程候选人人数
+          }
         })
         .catch((err) => {
           console.log(err);

@@ -160,6 +160,7 @@ export default {
           .then((res) => {
             if (res.err == 0) {
               this.$message("插入成功");
+              this.$store.commit("callListNumIncrease"); //更新vuex中callList流程候选人人数
               this.$router.push("/candidate");
             }
             if (res.err == -99) {
@@ -223,7 +224,7 @@ export default {
         area: "",
         sex: "",
         age: "",
-        pipeline: "",
+        pipeline: "callList",
         education: "",
         email: "",
         marriage: "",
