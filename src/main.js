@@ -14,7 +14,7 @@ import {
   setPipelineNums,
   getPipelineNums
 } from 'network/pipeline/pipelineNums.js'
-Vue.prototype.$apiUrl = "http://127.0.0.1:3000"
+Vue.prototype.$apiUrl = "http://81.68.227.246:3000"
 Vue.prototype.$confirm = MessageBox.confirm
 //添加事件总线
 Vue.prototype.$EventBus = new Vue()
